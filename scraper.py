@@ -1,11 +1,13 @@
 import re
 from urllib.parse import urlparse
-
+AUTHORITY_INDEX = 2 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
+
+    
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -19,7 +21,7 @@ def extract_next_links(url, resp):
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
-    # If you decide to crawl it, return True; otherwise return False.
+    # If you decide to crawl it, return True; otherwise return/admissions/undergraduate-application-process/ False.
     # There are already some conditions that return False.
     try:
         parsed = urlparse(url)
@@ -62,5 +64,10 @@ def _respects_robotstxt(url):
 
 
 def _is_in_domains(url):
-    pass
+    url_parts = url.split('/') ## -> This yields a list where 3rd element is the authority, which we want
+    ## URL FORMATTED LIKE - SCHEME://AUTHORITY/PATH?QUERY#FRAGMENT 
+    authority = url_parts[AUTHORITY_INDEX]
+
+    return bool(re.match(r'.*\.(ics.uci.edu|cs.uci.edu|informatics.uci.edu|stat.uci.edu)$', authority))
+    
 
