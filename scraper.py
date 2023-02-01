@@ -1,8 +1,19 @@
 import re
 from urllib.parse import urlparse
+from lxml import html, etree
+from bs4 import BeautifulSoup
+
 AUTHORITY_INDEX = 2 
 def scraper(url, resp):
+
+    page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
+    print(page_text.get_text().split())
+
+
+
     links = extract_next_links(url, resp)
+    for link in links:
+        print(link)
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
@@ -17,7 +28,10 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    return list()
+    
+    
+    return [link for link in html.iterlinks(resp.raw_response.content)]
+    
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
@@ -28,8 +42,8 @@ def is_valid(url):
         if parsed.scheme not in set(["http", "https"]):
             return False
         # additional url checks
-        elif all(_is_not_trap(url), _has_content(url), _is_similar(url),
-                _respects_robotstxt(url), _is_in_domains(url)):
+        elif all((_is_not_trap(url), _has_content(url), _is_similar(url),
+                _respects_robotstxt(url), _is_in_domains(url))):
             return True
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
