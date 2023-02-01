@@ -5,7 +5,7 @@ class Report:
     def __init__(self):
         self._word_frequencies = {}
         self._longest_page = 0
-        self._unqiue_urls = set()
+        self._unique_urls = set()
         self._longest_page_url = None
     
     def add_page(url, frequencies):

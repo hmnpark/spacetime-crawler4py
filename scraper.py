@@ -10,7 +10,6 @@ def scraper(url, resp):
     print(page_text.get_text())
 
 
-
     links = extract_next_links(url, resp)
     for link in links:
         print(link)
@@ -30,7 +29,7 @@ def extract_next_links(url, resp):
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
     
     
-    return [link for link in html.iterlinks(resp.raw_response.content)]
+    return [link[2] for link in html.iterlinks(resp.raw_response.content)]
     
 
 def is_valid(url):
@@ -42,9 +41,7 @@ def is_valid(url):
         if parsed.scheme not in set(["http", "https"]):
             return False
         # additional url checks
-        elif all((_is_not_trap(url), _has_content(url), _is_similar(url),
-                _respects_robotstxt(url), _is_in_domains(url))):
-            return True
+        
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
