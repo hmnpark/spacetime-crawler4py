@@ -7,7 +7,7 @@ AUTHORITY_INDEX = 2
 def scraper(url, resp):
 
     page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
-    print(page_text.get_text().split())
+    print(page_text.get_text())
 
 
 
@@ -77,11 +77,7 @@ def _respects_robotstxt(url):
     pass
 
 
-def _is_in_domains(url):
-    url_parts = url.split('/') ## -> This yields a list where 3rd element is the authority, which we want
-    ## URL FORMATTED LIKE - SCHEME://AUTHORITY/PATH?QUERY#FRAGMENT 
-    authority = url_parts[AUTHORITY_INDEX]
-
-    return bool(re.match(r'.*\.(ics.uci.edu|cs.uci.edu|informatics.uci.edu|stat.uci.edu)$', authority))
+def _is_in_domains(parsed):
+    return bool(re.match(r'.*\.(ics.uci.edu|cs.uci.edu|informatics.uci.edu|stat.uci.edu)$', parsed.netloc))
     
 
