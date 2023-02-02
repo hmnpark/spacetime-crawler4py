@@ -1,3 +1,4 @@
+import utils.stopwords
 class Report:
 
     COMMON_WORD_CUTOFF = 50
@@ -34,13 +35,13 @@ class Report:
 
     def _get_most_common_words(n) -> list:
         sorted_freqs = sorted(frequencies.items(), key = (lambda x: (-x[1], x[0]))): 
-        return sorted_freqs[:n]
+        return [word for word in sorted_freqs[:n] if word not in stopwords.STOPWORDS]
 
     def print_report():
-        
+        pass
         
 
-        ##prints unique urls
-        ##
+        
+
 
 
