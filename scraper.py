@@ -3,7 +3,10 @@ from urllib.parse import urlparse
 from lxml import html, etree
 from bs4 import BeautifulSoup
 
-AUTHORITY_INDEX = 2 
+# Import parse libraries.
+from bs4 import BeautifulSoup
+from lxml import html
+
 def scraper(url, resp):
 
     page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
@@ -27,10 +30,9 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    
-    
-    return [link[2] for link in html.iterlinks(resp.raw_response.content)]
-    
+    match resp.status:
+        case 200: return [link[2] for link in html.iterlinks(resp.raw_response.content)]
+        case _: return []
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
@@ -40,8 +42,11 @@ def is_valid(url):
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
-        # additional url checks
-        
+        elif not parsed.netloc.endswith((".ics.uci.edu",
+                                         ".cs.uci.edu",
+                                         ".informatics.uci.edu",
+                                         ".stat.uci.edu")):
+            return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -55,26 +60,3 @@ def is_valid(url):
     except TypeError:
         print ("TypeError for ", parsed)
         raise
-
-
-def _is_not_trap(url):
-    pass
-
-
-def _has_content(url):
-    pass
-
-
-def _is_similar(url):
-    pass
-
-
-# remember politeness
-def _respects_robotstxt(url):
-    pass
-
-
-def _is_in_domains(parsed):
-    return bool(re.match(r'.*\.(ics.uci.edu|cs.uci.edu|informatics.uci.edu|stat.uci.edu)$', parsed.netloc))
-    
-
