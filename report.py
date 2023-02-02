@@ -1,10 +1,13 @@
 from utils.stopwords import STOPWORDS
 from urllib.parse import urlparse
 
-def _subdomain_check(parsed_url, domain = '.ics.uci.edu'):
-    return parsed_url.netloc.endswith(domain) and parsed_url.netloc != 'www.ics.uci.edu'
+Token = str #for type annotations
 
-def _get_total_words(self, frequencies: {str: int}):
+
+def _subdomain_check(parsed_url: urlparse.ParseResult, domain = '.ics.uci.edu') -> bool:
+    return parsed_url.netloc.endswith(domain) and parsed_url.netloc != 'www.ics.uci.edu' ##if a netloc ends with the domain and is not the domain then it is a subdomain
+
+def _get_total_words(self, frequencies: {Token: int}) -> int:
 
         total = 0
         for _, freq in frequencies.items(): #word here doesnt matter
@@ -12,8 +15,6 @@ def _get_total_words(self, frequencies: {str: int}):
         return freq
 
 class Report:
-
-    COMMON_WORD_CUTOFF = 50
     
     '''
     This report will keep track of 50 most common words as well as the longest page in terms of words
@@ -26,8 +27,13 @@ class Report:
         self._longest_page_url = None
         self._ics_subdomains = {} #this will keep track of subdomains and the pages found in the subdomain
     
-    def add_page(self,url, frequencies):
+    def add_page(self,url: str, frequencies: {Token: int}) -> None:
         
+        '''
+        Takes in a url and a frequencies dict and adds an occurence of a subdomain to the _ics_subdomains dict. Also updates the total word
+        frequency dict with the frequencies passed in and updates the longest page encountered
+        '''
+
         parsed = urlparse(url)
         if _subdomain_check(parsed): #if a url is in the domain ics, then add to the subdomains 
             self._ics_subdomains[parsed.scheme + parse.netloc] = self._ics_subdomains.get(parsed.scheme + parse.netloc, 0) + 1
@@ -36,29 +42,44 @@ class Report:
         self._update_frequencies(frequencies) ##total frequencies will be updated
         self._update_longest_page(url, frequencies) ##longest page will be updated
 
-    def _update_frequencies(self,frequencies: {str: int}):
-        
+    def _update_frequencies(self,frequencies: {Token: int}) -> None:
+        '''
+        Takes in a frequencies dict and updates the total occurences of each token in the word_frequencies dict 
+        '''
         for word, freq in frequencies.items():
-            self._word_frequencies[word] = self._word_frequencies.get(word, 0) + freq
+            self._word_frequencies[word] = self._word_frequencies.get(word, 0) + freq 
     
-    def _update_longest_page(self, url, frequencies):
-        page_length = self._get_total_words(frequencies)
+    def _update_longest_page(self, url: str, frequencies: {Token:int}) -> None:
+
+        '''
+        Uses the _get_total_words helper function to count the amount of words on the page, and updates the max accordingly, storing this
+        length and the relevant url.
+        '''
+        page_length = _get_total_words(frequencies)
 
         if page_length > self._longest_page:
             self._longest_page = page_length
             self._longest_page_url = url #url will be tracked
 
-    def _get_most_common_words(self, n) -> list:
+    def _get_most_common_words(self, n = 50) -> list:
+
+        '''
+        Takes in a threshold (default 50) and returns a list of the n most common words seen ordered. Ties are resolved alphabetically and stopwords are ignored
+        '''
         sorted_freqs = sorted(self._word_frequencies.items(), key = (lambda x: (-x[1], x[0]))): #sorts by frequency and order ties by alphabteical order
         return [(word,freq) for (word,freq) in sorted_freqs[:n] if word not in stopwords.STOPWORDS] #checks to see if there are common stopwords and excludes such words
 
-    def print_report(self):
+    def print_report(self) -> None:
 
+        '''
+        Prints a formatted report of the word frequencies, the longest page encountered and its url, the 50 most common words, and the
+        subdomains in ics.uci.edu as well as the pages they link to
+        '''
         ##maybe get unqiue pages from the frontier - this would be a convenience thing
         print("REPORT:")
         print(f'The longest page in terms of words was {self._longest_page_url} with {self._longest_page} words.\n')
         print("The 50 most common words (ignoring English stopwords) were:")
-        for w,f in self._get_most_common_words(COMMON_WORD_CUTOFF):
+        for w,f in self._get_most_common_words():
             print(f'{w} --> {f}')
         
         print("Subdomains in ics.uci.edu (subdomain url --> pages detected in subdomain): ")
