@@ -13,8 +13,8 @@ class Simhash():
         self._fingerprints = dict()
         self._threshold = threshold
 
-    def is_similar(self, resp: Response, freqs: dict[str, int]) -> bool:
-        '''Returns true if the tokenized page is similar to any previously hashed page'''
+    def is_similar(self, resp: Response, freqs: dict[str, int]) -> str:
+        '''Return the url with similar content if found, else None.'''
         # use url minus fragment as key to store fingerprint
         parsed = urlparse(resp.url)
         url = parsed.netloc + parsed.path + parsed.query
@@ -22,14 +22,21 @@ class Simhash():
             self._add_fingerprint(url, freqs)
 
         # compare the fingerprint to all others
-        fingerprint = self._fingerprints[url]
-        for other_url, other_fingerprint in self._fingerprints.items():
-            if url != other_url and self._are_near(fingerprint, other_fingerprint):
-                return True
-        return False
+        for other_url in self._fingerprints:
+            if url != other_url and self._are_near(url, other_url):
+                return other_url
+        return None
     
-    def _are_near(self, fingerprint_a: int, fingerprint_b: int) -> bool:
-        '''Returns true if fingerprint_a and fingerprint_b are near duplicates.'''
+    def compute_similarity(self, url_a: str, url_b: str) -> float:
+        '''
+        Return the similarity value of the url's,
+        or 0 if either have not previously been compared.
+        '''
+        if url_a not in self._fingerprints or url_b not in self._fingerprints:
+            return 0
+
+        fingerprint_a = self._fingerprints[url_a]
+        fingerprint_b = self._fingerprints[url_b]
         # get intersection of the bits of fingerprints
         intersect_bits = ~(fingerprint_a ^ fingerprint_b)
 
@@ -39,8 +46,11 @@ class Simhash():
             count_bits += 1 if 1 & intersect_bits else 0
             intersect_bits >>= 1
 
-        similarity = count_bits / NUM_BITS
-        return similarity >= self._threshold
+        return count_bits / NUM_BITS
+
+    def _are_near(self, url_a: str, url_b: str) -> bool:
+        '''Returns true if fingerprint_a and fingerprint_b are near duplicates.'''
+        return self.compute_similarity(url_a, url_b) >= self._threshold
 
     def _add_fingerprint(self, url: str, freqs: dict[str, int]) -> None:
         '''Computes and adds fingerprint to remember.'''
