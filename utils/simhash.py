@@ -44,9 +44,9 @@ class Simhash():
 
     def _add_fingerprint(self, url: str, freqs: dict[str, int]) -> None:
         '''Computes and adds fingerprint to remember.'''
-        self._fingerprints[url] = self._compute_simhash(freqs)
+        self._fingerprints[url] = self._compute_fingerprint(freqs)
         
-    def _compute_simhash(self, freqs: dict[str, int]) -> int:
+    def _compute_fingerprint(self, freqs: dict[str, int]) -> int:
         '''Simhash algorithm. Weights determined by word frequencies.'''
         int_vector = [0] * NUM_BITS
         for token, freq in freqs.items():
