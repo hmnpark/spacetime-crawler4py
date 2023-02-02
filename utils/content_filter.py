@@ -2,7 +2,7 @@ import utils.stopwords
 
 Token = str #type hints
 
-def _get_total_words(frequencies: {Token: int}) -> int:
+def _get_total_words(frequencies: dict[Token: int]) -> int:
     '''
     Returns the total amount of words present in the page based on the frequencies provided in the dict
     '''
@@ -11,7 +11,7 @@ def _get_total_words(frequencies: {Token: int}) -> int:
         total+=freq
     return freq
 
-def _get_total_stopwords(frequencies: {Token:int}) -> int:
+def _get_total_stopwords(frequencies: dict[Token:int]) -> int:
 
     '''
     Gets the total amount of stopwords in the frequencies dict
@@ -22,7 +22,7 @@ def _get_total_stopwords(frequencies: {Token:int}) -> int:
     return freq
 
 
-def has_high_textual_information_content(frequencies: {Token: str}, min_word_threshold = 50, stopword_ratio_threshold = .5) -> bool:
+def has_high_textual_information_content(frequencies: dict[Token: str], min_word_threshold = 50, stopword_ratio_threshold = .5) -> bool:
     '''This function will evaluate whether or not a page has high textual information content
        based on a number of factors
 
