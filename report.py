@@ -66,8 +66,11 @@ class Report:
         '''
         Takes in a threshold (default 50) and returns a list of the n most common words seen ordered. Ties are resolved alphabetically and stopwords are ignored
         '''
-        sorted_freqs = sorted(self._word_frequencies.items(), key = (lambda x: (-x[1], x[0]))): #sorts by frequency and order ties by alphabteical order
-        return [(word,freq) for (word,freq) in sorted_freqs[:n] if word not in stopwords.STOPWORDS] #checks to see if there are common stopwords and excludes such words
+        sorted_freqs = sorted(self._word_frequencies.items(), key = (lambda x: (x[0] in stopwords.STOPWORDS, -x[1], x[0]))): #sorts by frequency and order ties by alphabteical order
+        ##The lamdba function returns a true or false value for the first tuple element, and the true tuples represent 
+        ##stop words, which will essentially be pushed to the end of the sort as true > false
+        
+        return sorted_freqs[:n] #checks to see if there are common stopwords and excludes such words
 
     def print_report(self) -> None:
 
