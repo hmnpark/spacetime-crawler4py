@@ -8,7 +8,7 @@ def scraper(url, resp):
 
     page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
     print(page_text.get_text())
-
+    
 
     links = extract_next_links(url, resp)
     for link in links:
