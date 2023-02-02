@@ -1,9 +1,9 @@
 from utils.stopwords import STOPWORDS
 from urllib.parse import urlparse
 
-def _subdomain_check(parsed_url, domain = 'ics.uci.edu'):
+def _subdomain_check(parsed_url, domain = '.ics.uci.edu'):
         
-        return not parsed_url.netloc.startswith(domain) and parsed_url.netloc.endswith(domain)
+        return parsed_url.netloc.endswith(domain)
 
 def _get_total_words(self, frequencies: {str: int}):
 
