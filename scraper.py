@@ -5,6 +5,8 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from lxml import html
 
+MAX_SIZE = 100000
+
 def scraper(url, resp):
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
@@ -20,7 +22,10 @@ def extract_next_links(url, resp):
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
     match resp.status:
-        case 200: return [link[2] for link in html.iterlinks(resp.raw_response.content)]
+        case 200:
+            if len(resp.raw_response.content) <= MAX_SIZE:
+                return [link[2] for link in html.iterlinks(resp.raw_response.content)]
+            return []
         case _: return []
 
 def is_valid(url):
