@@ -7,7 +7,7 @@ Token = str #for type annotations
 def _subdomain_check(parsed_url: urlparse.ParseResult, domain = '.ics.uci.edu') -> bool:
     return parsed_url.netloc.endswith(domain) and parsed_url.netloc != 'www.ics.uci.edu' ##if a netloc ends with the domain and is not the domain then it is a subdomain
 
-def _get_total_words(self, frequencies: {Token: int}) -> int:
+def _get_total_words(self, frequencies: dict[Token: int]) -> int:
 
         total = 0
         for _, freq in frequencies.items(): #word here doesnt matter
@@ -27,7 +27,7 @@ class Report:
         self._longest_page_url = None
         self._ics_subdomains = {} #this will keep track of subdomains and the pages found in the subdomain
     
-    def add_page(self,url: str, frequencies: {Token: int}) -> None:
+    def add_page(self,url: str, frequencies: dict[Token: int]) -> None:
         
         '''
         Takes in a url and a frequencies dict and adds an occurence of a subdomain to the _ics_subdomains dict. Also updates the total word
@@ -42,14 +42,14 @@ class Report:
         self._update_frequencies(frequencies) ##total frequencies will be updated
         self._update_longest_page(url, frequencies) ##longest page will be updated
 
-    def _update_frequencies(self,frequencies: {Token: int}) -> None:
+    def _update_frequencies(self,frequencies: dict[Token: int]) -> None:
         '''
         Takes in a frequencies dict and updates the total occurences of each token in the word_frequencies dict 
         '''
         for word, freq in frequencies.items():
             self._word_frequencies[word] = self._word_frequencies.get(word, 0) + freq 
     
-    def _update_longest_page(self, url: str, frequencies: {Token:int}) -> None:
+    def _update_longest_page(self, url: str, frequencies: dict[Token:int]) -> None:
 
         '''
         Uses the _get_total_words helper function to count the amount of words on the page, and updates the max accordingly, storing this
