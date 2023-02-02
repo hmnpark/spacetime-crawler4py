@@ -2,7 +2,8 @@ import re
 from urllib.parse import urlparse
 from lxml import html, etree
 from bs4 import BeautifulSoup
-
+import report
+import content_filter
 # Import parse libraries.
 from bs4 import BeautifulSoup
 from lxml import html
@@ -10,12 +11,12 @@ from lxml import html
 def scraper(url, resp):
 
     page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
-    print(page_text.get_text())
-
+    #print(page_text.get_text())
+    
 
     links = extract_next_links(url, resp)
-    for link in links:
-        print(link)
+    #for link in links:
+        #print(link)
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
