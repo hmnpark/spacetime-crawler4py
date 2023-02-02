@@ -1,13 +1,13 @@
 import utils.stopwords
 
 
-def get_total_words(frequencies: {str: int}):
+def _get_total_words(frequencies: {str: int}):
     total = 0
     for _, freq in frequencies.items():
         total+=freq
     return freq
 
-def get_total_stopwords(frequencies):
+def _get_total_stopwords(frequencies):
     total = 0
     for word, freq in frequencies.items():
         total += freq if word in stopwords.STOPWORDS else 0
