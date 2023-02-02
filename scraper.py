@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from lxml import html
 
-MAX_SIZE = 100000
+MAX_SIZE = 15_000_000
 
 def scraper(url, resp):
     links = extract_next_links(url, resp)
