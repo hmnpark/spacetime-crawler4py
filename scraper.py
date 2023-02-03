@@ -1,5 +1,7 @@
 import re
 from urllib.parse import urlparse
+from lxml import html, etree
+from bs4 import BeautifulSoup
 
 # Import parse libraries.
 from bs4 import BeautifulSoup
@@ -8,10 +10,19 @@ from lxml import html
 MAX_SIZE = 15_000_000
 
 def scraper(url, resp):
+
+    page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
+    print(page_text.get_text())
+    
+
     links = extract_next_links(url, resp)
+    for link in links:
+        print(link)
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
+
+    
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -30,7 +41,7 @@ def extract_next_links(url, resp):
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
-    # If you decide to crawl it, return True; otherwise return False.
+    # If you decide to crawl it, return True; otherwise return/admissions/undergraduate-application-process/ False.
     # There are already some conditions that return False.
     try:
         parsed = urlparse(url)
