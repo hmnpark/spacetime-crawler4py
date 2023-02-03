@@ -9,7 +9,7 @@ def _get_total_words(frequencies: dict[Token: int]) -> int:
     total = 0
     for _, freq in frequencies.items():
         total+=freq
-    return freq
+    return total
 
 def _get_total_stopwords(frequencies: dict[Token:int]) -> int:
 
