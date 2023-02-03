@@ -10,6 +10,8 @@ from utils import get_logger, get_urlhash, normalize
 from utils.download import download
 from utils.robots import robots_check
 from scraper import is_valid
+from utils.report import Report
+from utils.simhash import Simhash
 
 class Frontier(object):
     def __init__(self, config, restart):
@@ -17,6 +19,8 @@ class Frontier(object):
         self.config = config
         self.to_be_downloaded = list()
         self.robot_rules = dict()  # dict[netloc, (list[allowed paths], list[disallowed paths])]
+        self.report = Report()
+        self.simhash = Simhash()
         
         if not os.path.exists(self.config.save_file) and not restart:
             # Save file does not exist, but request to load save.

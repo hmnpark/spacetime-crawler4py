@@ -1,28 +1,33 @@
 import re
 from urllib.parse import urlparse
-from lxml import html, etree
-from bs4 import BeautifulSoup
 
 # Import parse libraries.
 from bs4 import BeautifulSoup
 from lxml import html
 
+# Import tokenizer.
+from utils.tokenize import computeWordFrequencies
+
+# Import information content filter.
+from utils.content_filter import has_high_textual_information_content
+
 MAX_SIZE = 15_000_000
 
-def scraper(url, resp):
-
+def scraper(url, resp, frontier):
     page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
-    print(page_text.get_text())
-    
+    frequencies = computeWordFrequencies(page_text.get_text())
+
+    frontier.report.add_page(url, frequencies)
+
+    if has_high_textual_information_content(frequencies):
+        return []
+    elif frontier.simhash.is_similar(resp, frequencies):
+        return []
 
     links = extract_next_links(url, resp)
-    for link in links:
-        print(link)
     return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
-
-    
     # Implementation required.
     # url: the URL that was used to get the page
     # resp.url: the actual url of the page
@@ -52,6 +57,7 @@ def is_valid(url):
                                          ".informatics.uci.edu",
                                          ".stat.uci.edu")):
             return False
+        # handle ?share=twitter, ?share=facebook, wp-json
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"

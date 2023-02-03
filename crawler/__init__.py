@@ -25,7 +25,3 @@ class Crawler(object):
         for worker in self.workers:
             worker.join()
     
-    def _add_sitemap_urls(self) -> None:
-        urls_to_add = get_sitemap_urls(self.config.seed_urls, self.config, self.logger)
-        for url in urls_to_add:
-            self.frontier.add_url(url)

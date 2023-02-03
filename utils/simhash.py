@@ -9,7 +9,7 @@ class Simhash():
     _fingerprints: dict[str, int]
     _threshold: float
 
-    def __init__(self, threshold=0.9) -> None:
+    def __init__(self, threshold=0.965) -> None:
         self._fingerprints = dict()
         self._threshold = threshold
 

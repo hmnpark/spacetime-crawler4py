@@ -4,10 +4,10 @@ from urllib.parse import urlparse
 Token = str #for type annotations
 
 
-def _subdomain_check(parsed_url: urlparse.ParseResult, domain = '.ics.uci.edu') -> bool:
+def _subdomain_check(parsed_url: 'urlparse.ParseResult', domain = '.ics.uci.edu') -> bool:
     return parsed_url.netloc.endswith(domain) and parsed_url.netloc != 'www.ics.uci.edu' ##if a netloc ends with the domain and is not the domain then it is a subdomain
 
-def _get_total_words(self, frequencies: dict[Token: int]) -> int:
+def _get_total_words(frequencies: dict[Token: int]) -> int:
 
         total = 0
         for _, freq in frequencies.items(): #word here doesnt matter
@@ -36,7 +36,7 @@ class Report:
 
         parsed = urlparse(url)
         if _subdomain_check(parsed): #if a url is in the domain ics, then add to the subdomains 
-            self._ics_subdomains[parsed.scheme + parse.netloc] = self._ics_subdomains.get(parsed.scheme + parse.netloc, 0) + 1
+            self._ics_subdomains[parsed.scheme + parsed.netloc] = self._ics_subdomains.get(parsed.scheme + parsed.netloc, 0) + 1
             ##this increments the pages in a subdomain each time one is detected 
             ##specifically looks for pages in the ics domain
         self._update_frequencies(frequencies) ##total frequencies will be updated
@@ -66,7 +66,8 @@ class Report:
         '''
         Takes in a threshold (default 50) and returns a list of the n most common words seen ordered. Ties are resolved alphabetically and stopwords are ignored
         '''
-        sorted_freqs = sorted(self._word_frequencies.items(), key = (lambda x: (x[0] in stopwords.STOPWORDS, -x[1], x[0]))): #sorts by frequency and order ties by alphabteical order
+        sorted_freqs = sorted(self._word_frequencies.items(), key = (lambda x: (x[0] in STOPWORDS, -x[1], x[0])))
+        #sorts by frequency and order ties by alphabteical order
         ##The lamdba function returns a true or false value for the first tuple element, and the true tuples represent 
         ##stop words, which will essentially be pushed to the end of the sort as true > false
         

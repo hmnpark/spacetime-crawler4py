@@ -1,4 +1,4 @@
-import utils.stopwords
+from utils.stopwords import STOPWORDS
 
 Token = str #type hints
 
@@ -18,7 +18,7 @@ def _get_total_stopwords(frequencies: dict[Token:int]) -> int:
     '''
     total = 0
     for word, freq in frequencies.items():
-        total += freq if word in stopwords.STOPWORDS else 0 ##STOPWORDS is set of all the English stopwords
+        total += freq if word in STOPWORDS else 0 ##STOPWORDS is set of all the English stopwords
     return freq
 
 
@@ -30,7 +30,6 @@ def has_high_textual_information_content(frequencies: dict[Token: str], min_word
        a minimum of 50 non stopword tokens   
     '''
 
-    total_stop_words = get_total_stopwords(frequencies) 
-    total_words = get_total_words(frequencies)
-    return total_stop_words / get_total_words < STOPWORD_RATIO_THRESHOLD and total_words - total_stop_words > stopword_ratio_threshold:
-
+    total_stop_words = _get_total_stopwords(frequencies) 
+    total_words = _get_total_words(frequencies)
+    return total_stop_words / total_words < stopword_ratio_threshold and total_words - total_stop_words > stopword_ratio_threshold
