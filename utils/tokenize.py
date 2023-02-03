@@ -37,4 +37,4 @@ def _tokenize_line(line: str, tokens: list[Token]) -> None:
 def _is_valid_token(token: str) -> bool:
     '''Checks if the token is valid.'''
     # checks that string is alphanumeric
-    return len(str) > 2 and token.isalnum()
+    return len(token) > 2 and token.isalnum()
