@@ -32,4 +32,4 @@ def has_high_textual_information_content(frequencies: dict[Token: str], min_word
 
     total_stop_words = _get_total_stopwords(frequencies) 
     total_words = _get_total_words(frequencies)
-    return total_stop_words / total_words < stopword_ratio_threshold and total_words - total_stop_words > min_word_threshold
+    return  total_words - total_stop_words > min_word_threshold and total_stop_words / total_words < stopword_ratio_threshold
