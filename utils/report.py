@@ -26,14 +26,15 @@ class Report:
         self._longest_page = 0 
         self._longest_page_url = None
         self._ics_subdomains = {} #this will keep track of subdomains and the pages found in the subdomain
-    
+        self._unique_urls = 0
+
     def add_page(self,url: str, frequencies: dict[Token: int]) -> None:
         
         '''
         Takes in a url and a frequencies dict and adds an occurence of a subdomain to the _ics_subdomains dict. Also updates the total word
         frequency dict with the frequencies passed in and updates the longest page encountered
         '''
-
+        self._unique_urls += 1
         parsed = urlparse(url)
         if _subdomain_check(parsed): #if a url is in the domain ics, then add to the subdomains 
             self._ics_subdomains[f'{parsed.scheme}://{parsed.netloc}'] = self._ics_subdomains.get(parsed.scheme + parsed.netloc, 0) + 1
@@ -83,6 +84,7 @@ class Report:
 
         result = ''
         result += 'REPORT:'
+        result+=f'Crawler encountered {self._unique_urls} unique pages\n'
         result += f'The longest page in terms of words was {self._longest_page_url} with {self._longest_page} words.\n\n'
         result += f'The 50 most common words (ignoring English stopwords) were:'
         for w,f in self._get_most_common_words():
