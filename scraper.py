@@ -15,7 +15,9 @@ MAX_SIZE = 15_000_000
 
 def scraper(url, resp, frontier):
     match resp.raw_response:
-        case None: return []
+        case None:
+            frontier.report.add_page(url, {})
+            return []
         case _:
             page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
             frequencies = computeWordFrequencies(page_text.get_text())
