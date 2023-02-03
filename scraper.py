@@ -14,18 +14,17 @@ from utils.content_filter import has_high_textual_information_content
 MAX_SIZE = 15_000_000
 
 def scraper(url, resp, frontier):
-    page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
-    frequencies = computeWordFrequencies(page_text.get_text())
+    match resp.raw_response:
+        case None: return []
+        case _:
+            page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
+            frequencies = computeWordFrequencies(page_text.get_text())
+            frontier.report.add_page(url, frequencies)
+            if has_high_textual_information_content(frequencies): return []
+            elif frontier.simhash.is_similar(resp, frequencies): return []
+            links = extract_next_links(url, resp)
+            return [link for link in links if is_valid(link)]
 
-    frontier.report.add_page(url, frequencies)
-
-    if has_high_textual_information_content(frequencies):
-        return []
-    elif frontier.simhash.is_similar(resp, frequencies):
-        return []
-
-    links = extract_next_links(url, resp)
-    return [link for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
     # Implementation required.

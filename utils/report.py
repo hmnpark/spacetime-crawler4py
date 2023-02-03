@@ -12,7 +12,7 @@ def _get_total_words(frequencies: dict[Token: int]) -> int:
         total = 0
         for _, freq in frequencies.items(): #word here doesnt matter
             total+=freq
-        return freq
+        return total
 
 class Report:
     
@@ -73,7 +73,7 @@ class Report:
         
         return sorted_freqs[:n] #checks to see if there are common stopwords and excludes such words
 
-    def print_report(self) -> None:
+    def report(self) -> str:
 
         '''
         Prints a formatted report of the word frequencies, the longest page encountered and its url, the 50 most common words, and the
