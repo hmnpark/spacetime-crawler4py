@@ -12,19 +12,31 @@ from utils.tokenize import computeWordFrequencies
 # Import information content filter.
 from utils.content_filter import has_high_textual_information_content
 
+# Addtional logging
+from utils.scraper_log import log_high_txt_info_content, log_simhash
+from utils import get_logger
+SCRAPER_LOGGER = get_logger('Scraper', 'Scraper')
+
 MAX_SIZE = 15_000_000
 
 def scraper(url, resp, frontier):
-    if resp.raw_response != None:
-        frequencies = computeWordFrequencies(
-            BeautifulSoup(resp.raw_response.content, 'html.parser').get_text())
-        frontier.report.add_page(resp.url, frequencies)
-        if (has_high_textual_information_content(frequencies) 
-        and not frontier.simhash.is_similar(resp, frequencies)):
-            links = extract_next_links(url, resp)
-            return [urldefrag(link).url for link in links if is_valid(link)]
-    else: frontier.report.add_page(resp.url, {})
-    return []
+    if resp.raw_response == None:
+        frontier.report.add_page(resp.url, {})
+        return []
+
+    frequencies = computeWordFrequencies(
+        BeautifulSoup(resp.raw_response.content, 'html.parser').get_text())
+    frontier.report.add_page(resp.url, frequencies)
+
+    # content checks
+    if not has_high_textual_information_content(frequencies):
+        log_high_txt_info_content(resp, frequencies, SCRAPER_LOGGER)
+    elif link:=frontier.simhash.is_similar(resp, frequencies):
+        log_simhash(resp, link, frontier.simhash, SCRAPER_LOGGER)
+
+    # page is good to crawl for links
+    links = extract_next_links(url, resp)
+    return [urldefrag(link).url for link in links if is_valid(link)]
 
 def extract_next_links(url, resp):
     # Implementation required.
