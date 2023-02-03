@@ -17,12 +17,12 @@ def scraper(url, resp, frontier):
     if resp.raw_response != None:
         frequencies = computeWordFrequencies(
             BeautifulSoup(resp.raw_response.content, 'html.parser').get_text())
-        frontier.report.add_page(url, frequencies)
+        frontier.report.add_page(resp.url, frequencies)
         if (has_high_textual_information_content(frequencies) 
         and not frontier.simhash.is_similar(resp, frequencies)):
             links = extract_next_links(url, resp)
             return [urldefrag(link).url for link in links if is_valid(link)]
-    else: frontier.report.add_page(url, {})
+    else: frontier.report.add_page(resp.url, {})
     return []
 
 def extract_next_links(url, resp):
