@@ -36,7 +36,7 @@ class Report:
 
         parsed = urlparse(url)
         if _subdomain_check(parsed): #if a url is in the domain ics, then add to the subdomains 
-            self._ics_subdomains[parsed.scheme + parsed.netloc] = self._ics_subdomains.get(parsed.scheme + parsed.netloc, 0) + 1
+            self._ics_subdomains[f'{parsed.scheme}://{parsed.netloc}'] = self._ics_subdomains.get(parsed.scheme + parsed.netloc, 0) + 1
             ##this increments the pages in a subdomain each time one is detected 
             ##specifically looks for pages in the ics domain
         self._update_frequencies(frequencies) ##total frequencies will be updated
