@@ -1,10 +1,14 @@
 import os
 import shelve
+import time
 
 from threading import Thread, RLock
 from queue import Queue, Empty
+from urllib.parse import urlparse
 
 from utils import get_logger, get_urlhash, normalize
+from utils.download import download
+from utils.robots import robots_check
 from scraper import is_valid
 
 class Frontier(object):
@@ -12,6 +16,7 @@ class Frontier(object):
         self.logger = get_logger("FRONTIER")
         self.config = config
         self.to_be_downloaded = list()
+        self.robot_rules = dict()  # dict[netloc, (list[allowed paths], list[disallowed paths])]
         
         if not os.path.exists(self.config.save_file) and not restart:
             # Save file does not exist, but request to load save.
@@ -54,12 +59,18 @@ class Frontier(object):
             return None
 
     def add_url(self, url):
-        url = normalize(url)
-        urlhash = get_urlhash(url)
-        if urlhash not in self.save:
-            self.save[urlhash] = (url, False)
-            self.save.sync()
-            self.to_be_downloaded.append(url)
+        parsed = urlparse(url)
+        # if new authority, grab sitemap links if any.
+        # only add url if it respects robots.txt.
+        to_add = robots_check(url, self.robot_rules, self.config, self.logger)
+
+        for url in to_add:
+            url = normalize(url)
+            urlhash = get_urlhash(url)
+            if urlhash not in self.save:
+                self.save[urlhash] = (url, False)
+                self.save.sync()
+                self.to_be_downloaded.append(url)
     
     def mark_url_complete(self, url):
         urlhash = get_urlhash(url)
