@@ -55,9 +55,12 @@ def is_valid(url):
         elif not parsed.netloc.endswith((".ics.uci.edu",
                                          ".cs.uci.edu",
                                          ".informatics.uci.edu",
-                                         ".stat.uci.edu")):
+                                         ".stat.uci.edu")) \
+            or re.match(r'\?share=twitter|\?share=facebook|wp-json', url):
             return False
         # handle ?share=twitter, ?share=facebook, wp-json
+        # elif re.match(r'\?share=twitter|\?share=facebook|wp-json', url):
+        #     return False
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
