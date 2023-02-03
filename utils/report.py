@@ -73,7 +73,7 @@ class Report:
         
         return sorted_freqs[:n] #checks to see if there are common stopwords and excludes such words
 
-    def report(self) -> None:
+    def report(self) -> str:
 
         '''
         Prints a formatted report of the word frequencies, the longest page encountered and its url, the 50 most common words, and the
