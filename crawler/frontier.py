@@ -1,15 +1,13 @@
 import os
 import shelve
-import time
 
 from threading import Thread, RLock
 from queue import Queue, Empty
-from urllib.parse import urlparse
 
 from utils import get_logger, get_urlhash, normalize
-from utils.download import download
-from utils.robots import robots_check
 from scraper import is_valid
+
+from utils.robots import robots_check
 from utils.report import Report
 from utils.simhash import Simhash
 
@@ -63,7 +61,6 @@ class Frontier(object):
             return None
 
     def add_url(self, url):
-        parsed = urlparse(url)
         # if new authority, grab sitemap links if any.
         # only add url if it respects robots.txt.
         to_add = robots_check(url, self.robot_rules, self.config, self.logger)
