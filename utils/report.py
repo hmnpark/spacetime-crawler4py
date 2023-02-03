@@ -1,21 +1,21 @@
 from utils.stopwords import STOPWORDS
 from urllib.parse import urlparse
 
-Token = str #for type annotations
+# For Type Annotations.
+Token = str
 
 
 def _subdomain_check(parsed_url: 'urlparse.ParseResult', domain = '.ics.uci.edu') -> bool:
     return parsed_url.netloc.endswith(domain) and parsed_url.netloc != 'www.ics.uci.edu' ##if a netloc ends with the domain and is not the domain then it is a subdomain
 
-def _get_total_words(frequencies: dict[Token: int]) -> int:
 
+def _get_total_words(frequencies: dict[Token: int]) -> int:
     total = 0
-    for _, freq in frequencies.items(): #word here doesnt matter
-        total+=freq
+    for _, freq in frequencies.items(): total += freq
     return total
 
+
 class Report:
-    
     '''
     This report will keep track of 50 most common words as well as the longest page in terms of words
     but it will not handle the distinct urls found or the subdomain as the frontier and worker classes
@@ -28,8 +28,8 @@ class Report:
         self._ics_subdomains = {} #this will keep track of subdomains and the pages found in the subdomain
         self._unique_urls = 0
 
-    def add_page(self,url: str, frequencies: dict[Token: int]) -> None:
-        
+
+    def add_page(self, url: str, frequencies: dict[Token: int]) -> None:
         '''
         Takes in a url and a frequencies dict and adds an occurence of a subdomain to the _ics_subdomains dict. Also updates the total word
         frequency dict with the frequencies passed in and updates the longest page encountered
@@ -37,11 +37,12 @@ class Report:
         self._unique_urls += 1
         parsed = urlparse(url)
         if _subdomain_check(parsed): #if a url is in the domain ics, then add to the subdomains 
-            self._ics_subdomains[f'{parsed.scheme}://{parsed.netloc}'] = self._ics_subdomains.get(parsed.scheme + parsed.netloc, 0) + 1
+            self._ics_subdomains[f'{parsed.scheme}://{parsed.netloc}'] = self._ics_subdomains.get(f'{parsed.scheme}://{parsed.netloc}', 0) + 1
             ##this increments the pages in a subdomain each time one is detected 
             ##specifically looks for pages in the ics domain
         self._update_frequencies(frequencies) ##total frequencies will be updated
         self._update_longest_page(url, frequencies) ##longest page will be updated
+
 
     def _update_frequencies(self,frequencies: dict[Token: int]) -> None:
         '''
@@ -50,6 +51,7 @@ class Report:
         for word, freq in frequencies.items():
             self._word_frequencies[word] = self._word_frequencies.get(word, 0) + freq 
     
+
     def _update_longest_page(self, url: str, frequencies: dict[Token:int]) -> None:
 
         '''
@@ -62,6 +64,7 @@ class Report:
             self._longest_page = page_length
             self._longest_page_url = url #url will be tracked
 
+
     def _get_most_common_words(self, n = 50) -> list:
 
         '''
@@ -73,6 +76,7 @@ class Report:
         ##stop words, which will essentially be pushed to the end of the sort as true > false
         
         return sorted_freqs[:n] #checks to see if there are common stopwords and excludes such words
+
 
     def report(self) -> str:
 
