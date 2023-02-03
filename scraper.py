@@ -70,27 +70,17 @@ def is_valid(url):
                                          ".stat.uci.edu")) \
             or re.match(r'.+(\?share=twitter|\?share=facebook|wp-json)', url):
             return False
-        # handle ?share=twitter, ?share=facebook, wp-json
-        # elif re.match(r'\?share=twitter|\?share=facebook|wp-json', url):
-        #     return False
-        return not re.match(
-            r".*\.(css|js|bmp|gif|jpe?g|ico"
-            + r"|png|tiff?|mid|mp2|mp3|mp4"
-            + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
-            + r"|ps|eps|tex|ppt|pptx|ppsx|doc|docx|xls|xlsx|names"
-            + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
-            + r"|epub|dll|cnf|tgz|sha1"
-            + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()) \
-                and not re.match(
-            r".*\.(css|js|bmp|gif|jpe?g|ico"
-            + r"|png|tiff?|mid|mp2|mp3|mp4"
-            + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
-            + r"|ps|eps|tex|ppt|pptx|ppsx|doc|docx|xls|xlsx|names"
-            + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
-            + r"|epub|dll|cnf|tgz|sha1"
-            + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.query.lower())
+
+        extensions_pattern = r".*\.(css|js|bmp|gif|jpe?g|ico" \
+            + r"|png|tiff?|mid|mp2|mp3|mp4" \
+            + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
+            + r"|ps|eps|tex|ppt|pptx|ppsx|doc|docx|xls|xlsx|names" \
+            + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso" \
+            + r"|epub|dll|cnf|tgz|sha1|bib" \
+            + r"|thmx|mso|arff|rtf|jar|csv" \
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$" 
+        return not re.match(extensions_pattern, parsed.path.lower()) \
+                and not re.match(extensions_pattern, parsed.query.lower())
 
     except TypeError:
         print ("TypeError for ", parsed)
