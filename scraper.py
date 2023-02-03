@@ -14,19 +14,16 @@ from utils.content_filter import has_high_textual_information_content
 MAX_SIZE = 15_000_000
 
 def scraper(url, resp, frontier):
-    match resp.raw_response:
-        case None:
-            frontier.report.add_page(url, {})
-            return []
-        case _:
-            page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
-            frequencies = computeWordFrequencies(page_text.get_text())
-            frontier.report.add_page(url, frequencies)
-            if not has_high_textual_information_content(frequencies): return []
-            elif frontier.simhash.is_similar(resp, frequencies): return []
+    if resp.raw_response != None:
+        frequencies = computeWordFrequencies(
+            BeautifulSoup(resp.raw_response.content, 'html.parser').get_text())
+        frontier.report.add_page(url, frequencies)
+        if (has_high_textual_information_content(frequencies) 
+        and not frontier.simhash.is_similar(resp, frequencies)):
             links = extract_next_links(url, resp)
             return [urldefrag(link).url for link in links if is_valid(link)]
-
+    else: frontier.report.add_page(url, {})
+    return []
 
 def extract_next_links(url, resp):
     # Implementation required.
@@ -38,12 +35,9 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    match resp.status:
-        case 200:
-            if len(resp.raw_response.content) <= MAX_SIZE:
-                return [link[2] for link in html.iterlinks(resp.raw_response.content)]
-            return []
-        case _: return []
+    if (resp.status == 200 and len(resp.raw_response.content) <= MAX_SIZE): 
+        return [link[2] for link in html.iterlinks(resp.raw_response.content)]
+    return []
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
