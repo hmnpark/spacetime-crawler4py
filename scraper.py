@@ -1,5 +1,5 @@
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urldefrag
 
 # Import parse libraries.
 from bs4 import BeautifulSoup
@@ -25,7 +25,7 @@ def scraper(url, resp, frontier):
             if has_high_textual_information_content(frequencies): return []
             elif frontier.simhash.is_similar(resp, frequencies): return []
             links = extract_next_links(url, resp)
-            return [link for link in links if is_valid(link)]
+            return [urldefrag(link) for link in links if is_valid(link)]
 
 
 def extract_next_links(url, resp):
