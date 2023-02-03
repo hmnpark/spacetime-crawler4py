@@ -22,7 +22,7 @@ def scraper(url, resp, frontier):
             page_text = BeautifulSoup(resp.raw_response.content, 'html.parser')
             frequencies = computeWordFrequencies(page_text.get_text())
             frontier.report.add_page(url, frequencies)
-            if has_high_textual_information_content(frequencies): return []
+            if not has_high_textual_information_content(frequencies): return []
             elif frontier.simhash.is_similar(resp, frequencies): return []
             links = extract_next_links(url, resp)
             return [urldefrag(link).url for link in links if is_valid(link)]
