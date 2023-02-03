@@ -4,6 +4,7 @@ from urllib.parse import urlparse, urldefrag
 # Import parse libraries.
 from bs4 import BeautifulSoup
 from lxml import html
+from lxml.etree import ParserError
 
 # Import tokenizer.
 from utils.tokenize import computeWordFrequencies
@@ -35,9 +36,13 @@ def extract_next_links(url, resp):
     #         resp.raw_response.url: the url, again
     #         resp.raw_response.content: the content of the page!
     # Return a list with the hyperlinks (as strings) scrapped from resp.raw_response.content
-    if (resp.status == 200 and len(resp.raw_response.content) <= MAX_SIZE): 
+    if (resp.status != 200 or len(resp.raw_response.content) > MAX_SIZE): 
+        return []
+
+    try:
         return [link[2] for link in html.iterlinks(resp.raw_response.content)]
-    return []
+    except ParserError:
+        return []
 
 def is_valid(url):
     # Decide whether to crawl this url or not. 
