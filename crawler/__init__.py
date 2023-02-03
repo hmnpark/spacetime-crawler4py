@@ -1,5 +1,4 @@
 from utils import get_logger
-from utils.robotstxt_sitemap import get_sitemap_urls
 from crawler.frontier import Frontier
 from crawler.worker import Worker
 
@@ -8,7 +7,6 @@ class Crawler(object):
         self.config = config
         self.logger = get_logger("CRAWLER")
         self.frontier = frontier_factory(config, restart)
-        self._add_sitemap_urls()
         self.workers = list()
         self.worker_factory = worker_factory
 
