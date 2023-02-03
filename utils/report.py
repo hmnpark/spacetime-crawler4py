@@ -9,10 +9,10 @@ def _subdomain_check(parsed_url: 'urlparse.ParseResult', domain = '.ics.uci.edu'
 
 def _get_total_words(frequencies: dict[Token: int]) -> int:
 
-        total = 0
-        for _, freq in frequencies.items(): #word here doesnt matter
-            total+=freq
-        return freq
+    total = 0
+    for _, freq in frequencies.items(): #word here doesnt matter
+        total+=freq
+    return total
 
 class Report:
     
@@ -73,19 +73,23 @@ class Report:
         
         return sorted_freqs[:n] #checks to see if there are common stopwords and excludes such words
 
-    def print_report(self) -> None:
+    def report(self) -> None:
 
         '''
         Prints a formatted report of the word frequencies, the longest page encountered and its url, the 50 most common words, and the
         subdomains in ics.uci.edu as well as the pages they link to
         '''
-        ##maybe get unqiue pages from the frontier - this would be a convenience thing
-        print("REPORT:")
-        print(f'The longest page in terms of words was {self._longest_page_url} with {self._longest_page} words.\n')
-        print("The 50 most common words (ignoring English stopwords) were:")
+        ##maybe get unique pages from the frontier - this would be a convenience thing
+
+        result = ''
+        result += 'REPORT:'
+        result += f'The longest page in terms of words was {self._longest_page_url} with {self._longest_page} words.\n\n'
+        result += f'The 50 most common words (ignoring English stopwords) were:'
         for w,f in self._get_most_common_words():
-            print(f'{w} --> {f}')
+            result += f'{w} --> {f}\n'
         
-        print("Subdomains in ics.uci.edu (subdomain url --> pages detected in subdomain): ")
+        result+="Subdomains in ics.uci.edu (subdomain url --> pages detected in subdomain):\n"
         for sd, freq in self._ics_subdomains.items():
-            print(f'{sd} --> {freq}')
+            result+=f'{sd} --> {freq}\n'
+        result+='END OF REPORT\n'
+        return result
