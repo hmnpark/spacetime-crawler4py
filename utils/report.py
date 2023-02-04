@@ -1,8 +1,14 @@
 from utils.stopwords import STOPWORDS
 from urllib.parse import urlparse
+import os
+import shelve
 
 # For Type Annotations.
 Token = str
+
+WORD_FREQ_FILE = 'word_freq.shelve'
+ICS_SUBDOMAINS_FILE = 'ics_subdomains.shelve'
+REPORT_VARS_FILE = 'report_vars.shelve'
 
 
 def _subdomain_check(parsed_url: 'urlparse.ParseResult', domain = '.ics.uci.edu') -> bool:
@@ -21,12 +27,27 @@ class Report:
     but it will not handle the distinct urls found or the subdomain as the frontier and worker classes
     both log that information
     '''
-    def __init__(self):
-        self._word_frequencies = {} #this will keep track of total word frequencies 
-        self._longest_page = 0 
-        self._longest_page_url = None
-        self._ics_subdomains = {} #this will keep track of subdomains and the pages found in the subdomain
-        self._unique_urls = 0
+    def __init__(self, restart):
+        if restart and os.path.exists(WORD_FREQ_FILE):
+            print('Found word frequency save file and deleting it.')
+            os.remove(WORD_FREQ_FILE)
+        if restart and os.path.exists(ICS_SUBDOMAINS_FILE):
+            print('Found ICS subdomains save file and deleting it.')
+            os.remove(ICS_SUBDOMAINS_FILE)
+        if restart and os.path.exists(REPORT_VARS_FILE):
+            print('Found Report vars save file and deleting it.')
+            os.remove(REPORT_VARS_FILE)
+        # this will keep track of total word frequencies
+        self._word_frequencies = shelve.open(WORD_FREQ_FILE)  
+        # this will keep track of subdomains and the pages found in the subdomain
+        self._ics_subdomains = shelve.open(ICS_SUBDOMAINS_FILE) 
+        # keeps track of longest page and url, and # of unique urls
+        self._report_vars = shelve.open(REPORT_VARS_FILE)
+
+        if restart:
+            self._report_vars['longest_page'] = 0
+            self._report_vars['longest_page_url'] = None
+            self._report_vars['unique_urls'] = 0
 
 
     def add_page(self, url: str, frequencies: dict[Token: int]) -> None:
@@ -34,7 +55,7 @@ class Report:
         Takes in a url and a frequencies dict and adds an occurence of a subdomain to the _ics_subdomains dict. Also updates the total word
         frequency dict with the frequencies passed in and updates the longest page encountered
         '''
-        self._unique_urls += 1
+        self._report_vars['unique_urls'] += 1
         parsed = urlparse(url)
         if _subdomain_check(parsed): #if a url is in the domain ics, then add to the subdomains 
             self._ics_subdomains[f'{parsed.scheme}://{parsed.netloc}'] = self._ics_subdomains.get(f'{parsed.scheme}://{parsed.netloc}', 0) + 1
@@ -60,9 +81,9 @@ class Report:
         '''
         page_length = _get_total_words(frequencies)
 
-        if page_length > self._longest_page:
-            self._longest_page = page_length
-            self._longest_page_url = url #url will be tracked
+        if page_length > self._report_vars['longest_page']:
+            self._report_vars['longest_page'] = page_length
+            self._report_vars['longest_page_url'] = url #url will be tracked
 
 
     def _get_most_common_words(self, n = 50) -> list:
@@ -88,8 +109,9 @@ class Report:
 
         result = ''
         result += 'REPORT:'
-        result+=f'Crawler encountered {self._unique_urls} unique pages\n'
-        result += f'The longest page in terms of words was {self._longest_page_url} with {self._longest_page} words.\n\n'
+        result+=f'Crawler encountered {self._report_vars["unique_urls"]} unique pages\n'
+        result += f'The longest page in terms of words was {self._report_vars["longest_page_url"]}' \
+            + f"with {self._report_vars['longest_page']} words.\n\n"
         result += f'The 50 most common words (ignoring English stopwords) were:'
         for w,f in self._get_most_common_words():
             result += f'{w} --> {f}\n'

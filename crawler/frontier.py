@@ -18,8 +18,8 @@ class Frontier(object):
         self.logger = get_logger("FRONTIER")
         self.config = config
         self.to_be_downloaded = list()
-        self.report = Report()
-        self.simhash = Simhash(restart=restart)
+        self.report = Report(restart)
+        self.simhash = Simhash(restart)
         
         # shelve for urls
         if not os.path.exists(self.config.save_file) and not restart:
