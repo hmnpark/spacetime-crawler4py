@@ -70,7 +70,8 @@ def is_valid(url):
                                          ".cs.uci.edu",
                                          ".informatics.uci.edu",
                                          ".stat.uci.edu")) \
-            or re.match(r'.+(\?share=twitter|\?share=facebook|wp-json)', url):
+            or re.match(r'.+(\?share=twitter|\?share=facebook|wp-json)', url) \
+            or re.match(r'.*\/files\/pdf', parsed.path.lower()):
             return False
 
         extensions_pattern = r".*\.(css|js|bmp|gif|jpe?g|ico" \
