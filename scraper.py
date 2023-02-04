@@ -31,8 +31,10 @@ def scraper(url, resp, frontier):
     # content checks
     if not has_high_textual_information_content(frequencies):
         log_high_txt_info_content(resp, frequencies, SCRAPER_LOGGER)
+        return []
     elif link:=frontier.simhash.is_similar(resp, frequencies):
         log_simhash(resp, link, frontier.simhash, SCRAPER_LOGGER)
+        return []
 
     # page is good to crawl for links
     links = extract_next_links(url, resp)
