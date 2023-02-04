@@ -107,12 +107,12 @@ class Report:
         '''
         ##maybe get unique pages from the frontier - this would be a convenience thing
 
-        result = ''
-        result += 'REPORT:'
+        result = '\n'
+        result += 'REPORT:\n'
         result+=f'Crawler encountered {self._report_vars["unique_urls"]} unique pages\n'
         result += f'The longest page in terms of words was {self._report_vars["longest_page_url"]}' \
             + f"with {self._report_vars['longest_page']} words.\n\n"
-        result += f'The 50 most common words (ignoring English stopwords) were:'
+        result += f'The 50 most common words (ignoring English stopwords) were:\n'
         for w,f in self._get_most_common_words():
             result += f'{w} --> {f}\n'
         result+=f'Crawler encountered {len(self._ics_subdomains)} subdomains\n'
