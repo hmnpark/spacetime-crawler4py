@@ -18,7 +18,7 @@ class Frontier(object):
         self.to_be_downloaded = list()
         self.robot_rules = dict()  # dict[netloc, (list[allowed paths], list[disallowed paths])]
         self.report = Report()
-        self.simhash = Simhash()
+        self.simhash = Simhash(restart=restart)
         
         if not os.path.exists(self.config.save_file) and not restart:
             # Save file does not exist, but request to load save.
