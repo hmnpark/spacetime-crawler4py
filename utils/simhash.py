@@ -1,5 +1,8 @@
-from utils.response import Response
+import shelve
+import os
+import hashlib
 from urllib.parse import urlparse
+from utils.response import Response
 
 
 NUM_BITS = 64
@@ -9,8 +12,11 @@ class Simhash():
     _fingerprints: dict[str, int]
     _threshold: float
 
-    def __init__(self, threshold=0.965) -> None:
-        self._fingerprints = dict()
+    def __init__(self, restart, threshold=0.965, save_file: str='fingerprints.shelve') -> None:
+        if restart and os.path.exists(save_file):
+            print('Found Simhash save file and deleting it.')
+            os.remove(save_file)
+        self._fingerprints = shelve.open(save_file)
         self._threshold = threshold
 
     def is_similar(self, resp: Response, freqs: dict[str, int]) -> str:
@@ -61,8 +67,8 @@ class Simhash():
         int_vector = [0] * NUM_BITS
         for token, freq in freqs.items():
             # add the current token's weight to the vector
-            hash_val = hash(token)
-            bin_str = bin(hash_val)[2:]
+            hash_val = hashlib.sha256(token.encode('utf-8')).digest()
+            bin_str = bin(int.from_bytes(hash_val, 'little'))[-64:]
             for i, bit in enumerate(reversed(bin_str)):
                 weight = freq if bit == '1' else -freq
                 int_vector[NUM_BITS-1-i] += weight

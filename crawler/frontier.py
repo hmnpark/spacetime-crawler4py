@@ -11,15 +11,17 @@ from utils.robots import robots_check
 from utils.report import Report
 from utils.simhash import Simhash
 
+ROBOT_RULES_FILE = 'robot_rules.shelve'
+
 class Frontier(object):
     def __init__(self, config, restart):
         self.logger = get_logger("FRONTIER")
         self.config = config
         self.to_be_downloaded = list()
-        self.robot_rules = dict()  # dict[netloc, (list[allowed paths], list[disallowed paths])]
-        self.report = Report()
-        self.simhash = Simhash()
+        self.report = Report(restart)
+        self.simhash = Simhash(restart)
         
+        # shelve for urls
         if not os.path.exists(self.config.save_file) and not restart:
             # Save file does not exist, but request to load save.
             self.logger.info(
@@ -30,7 +32,22 @@ class Frontier(object):
             self.logger.info(
                 f"Found save file {self.config.save_file}, deleting it.")
             os.remove(self.config.save_file)
+
+        # shelve for robot rules dict
+        if not os.path.exists(ROBOT_RULES_FILE) and not restart:
+            # Save file does not exist, but request to load save.
+            self.logger.info(
+                f"Did not find save file {ROBOT_RULES_FILE}")
+        elif os.path.exists(ROBOT_RULES_FILE) and restart:
+            # Save file does exists, but request to start from seed.
+            self.logger.info(
+                f"Found save file {ROBOT_RULES_FILE}, deleting it.")
+            os.remove(ROBOT_RULES_FILE)
         # Load existing save file, or create one if it does not exist.
+
+        # Load existing save files, or create them if they do not exist.
+        # dict[netloc, (list[allowed paths], list[disallowed paths])]
+        self.robot_rules = shelve.open(ROBOT_RULES_FILE)
         self.save = shelve.open(self.config.save_file)
         if restart:
             for url in self.config.seed_urls:
