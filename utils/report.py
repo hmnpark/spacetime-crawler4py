@@ -95,7 +95,7 @@ class Report:
             result += f'{w} --> {f}\n'
         
         result+="Subdomains in ics.uci.edu (subdomain url --> pages detected in subdomain):\n"
-        for sd, freq in self._ics_subdomains.items():
+        for sd, freq in sorted(self._ics_subdomains.items()):
             result+=f'{sd} --> {freq}\n'
         result+='END OF REPORT\n'
         return result
