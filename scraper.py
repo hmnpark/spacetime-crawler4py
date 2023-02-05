@@ -24,9 +24,11 @@ def scraper(url, resp, frontier):
         frontier.report.add_page(resp.url, {})
         return []
 
+
+    ##per the instructions (and our interpretation), we consider a url found if it was valid, and we only update frequencies if we decide to crawl
     frequencies = computeWordFrequencies(
-        BeautifulSoup(resp.raw_response.content, 'html.parser').get_text())
-    frontier.report.add_page(resp.url, frequencies)
+        BeautifulSoup(resp.raw_response.content, 'html.parser').get_text()) ##we get the token frequencies in every page
+    frontier.report.add_page(resp.url, frequencies)  ##this updates unique urls found and subdomains found
 
     # content checks
     if not has_high_textual_information_content(frequencies):
@@ -37,6 +39,8 @@ def scraper(url, resp, frontier):
         return []
 
     # page is good to crawl for links
+    ##since page is good to crawl, we update word frequencies
+    frontier.report.update_frequencies(frequencies)
     links = extract_next_links(url, resp)
     return [urldefrag(link).url for link in links if is_valid(link)]
 

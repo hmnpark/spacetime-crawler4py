@@ -40,11 +40,11 @@ class Report:
             self._ics_subdomains[f'{parsed.scheme}://{parsed.netloc}'] = self._ics_subdomains.get(f'{parsed.scheme}://{parsed.netloc}', 0) + 1
             ##this increments the pages in a subdomain each time one is detected 
             ##specifically looks for pages in the ics domain
-        self._update_frequencies(frequencies) ##total frequencies will be updated
+       
         self._update_longest_page(url, frequencies) ##longest page will be updated
 
-
-    def _update_frequencies(self,frequencies: dict[Token: int]) -> None:
+    
+    def update_frequencies(self,frequencies: dict[Token: int]) -> None:
         '''
         Takes in a frequencies dict and updates the total occurences of each token in the word_frequencies dict 
         '''
