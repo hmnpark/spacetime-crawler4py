@@ -38,7 +38,9 @@ def scraper(url, resp, frontier):
 
     # page is good to crawl for links
     links = extract_next_links(url, resp)
-    return [urldefrag(link).url for link in links if is_valid(link)]
+    valid_links = [urldefrag(link).url for link in links if is_valid(link)]
+    frontier.report.add_to_page_count_per_ics_subdomain(resp, valid_links, frontier.save)
+    return valid_links
 
 def extract_next_links(url, resp):
     # Implementation required.

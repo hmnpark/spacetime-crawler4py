@@ -1,3 +1,5 @@
+from utils.response import Response
+from utils import get_urlhash, normalize
 from utils.stopwords import STOPWORDS
 from urllib.parse import urlparse
 import os
@@ -57,12 +59,25 @@ class Report:
         '''
         self._report_vars['unique_urls'] += 1
         parsed = urlparse(url)
-        if _subdomain_check(parsed): #if a url is in the domain ics, then add to the subdomains 
-            self._ics_subdomains[f'{parsed.scheme}://{parsed.netloc}'] = self._ics_subdomains.get(f'{parsed.scheme}://{parsed.netloc}', 0) + 1
-            ##this increments the pages in a subdomain each time one is detected 
-            ##specifically looks for pages in the ics domain
         self._update_frequencies(frequencies) ##total frequencies will be updated
         self._update_longest_page(url, frequencies) ##longest page will be updated
+    
+
+    def add_to_page_count_per_ics_subdomain(self, resp: Response, valid_links: list[str], seen: dict|set) -> None:
+        '''Keeps track of the number of unique pages found in each subdomain of ics.uci.edu'''
+        # check that the parent page is a ics.uci.edu subdomain
+        parsed = urlparse(resp.url)
+        if not _subdomain_check(parsed):
+            return
+
+        # need to check links for uniqueness
+        unique_count =  0
+        for link in valid_links:
+            if get_urlhash(normalize(link)) in seen:
+                unique_count += 1
+
+        subdomain = f'{parsed.scheme}://{parsed.netloc}'
+        self._ics_subdomains[subdomain] = self._ics_subdomains.get(subdomain, 0) + unique_count
 
 
     def _update_frequencies(self,frequencies: dict[Token: int]) -> None:
