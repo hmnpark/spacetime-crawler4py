@@ -134,10 +134,5 @@ class Report:
         result+='Subdomains in ics.uci.edu (subdomain_url, pages detected in subdomain):\n'
         for sd, freq in sorted(self._ics_subdomains.items()):
             result+=f'{sd}, {freq}\n'
-        
-        result+=f'Crawler encountered {len(self._ics_subdomains)} subdomains\n'
-        result+='Subdomains in ics.uci.edu (subdomain_url, pages detected in subdomain):\n'
-        for sd, freq in sorted(self._ics_subdomains.items()):
-            result+=f'{sd}, {freq}\n'
         result+='END OF REPORT\n'
         return result
