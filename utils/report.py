@@ -71,13 +71,13 @@ class Report:
             return
 
         # need to check links for uniqueness
-        unique_count =  0
+        unique_links = set()
         for link in valid_links:
-            if get_urlhash(normalize(link)) in seen:
-                unique_count += 1
+            if get_urlhash(normalize(link)) not in seen and link not in unique_links:
+                unique_links.add(link)
 
         subdomain = f'{parsed.scheme}://{parsed.netloc}'
-        self._ics_subdomains[subdomain] = self._ics_subdomains.get(subdomain, 0) + unique_count
+        self._ics_subdomains[subdomain] = self._ics_subdomains.get(subdomain, 0) + len(unique_links)
 
 
     def _update_frequencies(self,frequencies: dict[Token: int]) -> None:
