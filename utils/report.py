@@ -132,7 +132,7 @@ class Report:
             result += f'{w} --> {f}\n'
         result+=f'Crawler encountered {len(self._ics_subdomains)} subdomains\n'
         result+='Subdomains in ics.uci.edu (subdomain_url, pages detected in subdomain):\n'
-        for sd, freq in sorted(self._ics_subdomains.items()):
+        for sd, freq in sorted(self._ics_subdomains.items(), key = (lambda x: urlparse(x[0]).netloc.lower())):
             result+=f'{sd}, {freq}\n'
         result+='END OF REPORT\n'
         return result
