@@ -90,7 +90,7 @@ class Report:
         result += 'REPORT:'
         result+=f'Crawler encountered {self._unique_urls} unique pages\n'
         result += f'The longest page in terms of words was {self._longest_page_url} with {self._longest_page} words.\n\n'
-        result += f'The 50 most common words (ignoring English stopwords) were:'
+        result += f'The 50 most common words (ignoring English stopwords) were:\n'
         for w,f in self._get_most_common_words():
             result += f'{w} --> {f}\n'
         result+=f'Crawler encountered {len(self._ics_subdomains)} subdomains\n'
