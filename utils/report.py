@@ -86,7 +86,7 @@ class Report:
         '''
         ##maybe get unique pages from the frontier - this would be a convenience thing
 
-        result = ''
+        result = '\n'
         result += 'REPORT:'
         result+=f'Crawler encountered {self._unique_urls} unique pages\n'
         result += f'The longest page in terms of words was {self._longest_page_url} with {self._longest_page} words.\n\n'
