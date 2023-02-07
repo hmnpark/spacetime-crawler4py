@@ -28,8 +28,8 @@ def robots_check(
         # can return url safely.
         return [url]
 
-    resp = download(f'{parsed.scheme}://{parsed.netloc}/robots.txt', config, logger)
     time.sleep(config.time_delay)
+    resp = download(f'{parsed.scheme}://{parsed.netloc}/robots.txt', config, logger)
     rules[parsed.netloc] = ([], []) # no robots.txt rules to follow. allow all.
     if resp.status != 200:
         return [url]    # no robots.txt to process
