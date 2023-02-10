@@ -67,6 +67,7 @@ def is_valid(url):
     # If you decide to crawl it, return True; otherwise return/admissions/undergraduate-application-process/ False.
     # There are already some conditions that return False.
     try:
+        url = url.strip()
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
@@ -75,7 +76,9 @@ def is_valid(url):
                                          ".informatics.uci.edu",
                                          ".stat.uci.edu")) \
             or re.match(r'.+(\?share=twitter|\?share=facebook|wp-json)', url) \
-            or re.match(r'(\/~shantas\/publications)|(.*\/files\/pdf)', parsed.path.lower()):
+            or re.match(r'(\/~shantas\/publications)|(.*\/files\/pdf)', parsed.path.lower()) \
+            or re.match(r'.*feed$', parsed.path.lower()) or re.macth(r'.*cgi', parsed.path.lower()) \
+            or re.match(r'.*jpg', parsed.path.lower()):
             return False
 
         extensions_pattern = r".*\.(css|js|bmp|gif|jpe?g|ico" \
@@ -85,7 +88,8 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso" \
             + r"|epub|dll|cnf|tgz|sha1|bib|txt" \
             + r"|thmx|mso|arff|rtf|jar|csv" \
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$" 
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz|rss|mat" \
+            + r"|svg|nb|m|r|rkt|odc|ss|java|py|scm|sas|c|webp|uai|sql|war|diff)$" 
         return not re.match(extensions_pattern, parsed.path.lower()) \
                 and not re.match(extensions_pattern, parsed.query.lower())
 
